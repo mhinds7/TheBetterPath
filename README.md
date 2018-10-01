@@ -14,4 +14,11 @@ Makefile        Run the walker on all the maps
 data/*map       Input map files
 data/*ref       Reference Comparison files for regression test
 ```
+## Todo
+For my next trick we should try to compute a more optimal search
+strategy for the static Surrounding Offset Vector (SOV).
+Make the SOV point from the Start coord to the End coord
+
+Possibley better still dynamically change the SOV to point
+from the Current coord to the End coord.
 
