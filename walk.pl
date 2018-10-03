@@ -19,7 +19,32 @@
 # files t7, t7a and t8, t8a
 
 # Offsets of the surrounding tiles from a given central tile
-my @Around = ([1, 1], [1, 0], [1,-1], [0,-1], [0,1], [-1,1], [-1,0], [-1,-1]);
+#y @Around = ([1,  1], [ 1, 0], [1,-1], [0,-1], [0, 1], [-1,1], [-1,0], [-1,-1]);
+my @Around = ([-1,-1], [-1, 0], [0,-1], [0, 1], [1,-1], [1, 0], [-1,1], [ 1, 1]);
+
+
+my $StepAroundStr;
+# make stepAround
+{
+#   my @ordered = qw(0 1 2 3 4 5 6 7);
+    my @ordered = @Around;
+    my @scrambled = @Around;
+#   my @scrambled;
+#   while (@ordered) { push(@scrambled, splice(@ordered, rand(@ordered), 1)) }
+
+    my @code;
+    my @dump;
+    for my $ar (@scrambled) {
+        my ($dr, $dc) = @$ar;
+        push(@dump, sprintf("%2d%2d", $dr, $dc));
+        if ($dr > 0) { $dr='+'.$dr } elsif ($dr == 0) { $dr='  ' }
+        if ($dc > 0) { $dc='+'.$dc } elsif ($dc == 0) { $dc='  ' }
+        push(@code, "step(\$r$dr,\$c$dc)");
+    }
+    $StepAroundStr = join('  ', @dump);
+    my $code = "sub stepAround { my(\$r,\$c)=\@_;return\n".join(" ||\n", @code)." } 1\n";
+    eval($code) || die("Bad code\n$@");
+}
 
 my (@Map, @Path, @Steps);
 my ($SR, $SC, $ER, $EC);
@@ -55,13 +80,18 @@ sub dumpPath($);
     push(@Map, [ split('', '*'x($Ncols+2)) ]);
 
     # Recursively walk the Map
+    my @depths;
     if (step($SR, $SC)) {
         my $depth = scalar(@Steps);
+        push(@depth, $depth);
         dumpPath($depth);
         if ((my $depth2 = minPath()) != $depth) {
             printf("Minimized %d steps\n", $depth - $depth2);
+            push(@depth, $depth2);
             dumpPath($depth2);
         }
+        else { push(@depth, 0) }
+        printf("Depth %3d %3d Around %s\n", @depth, $StepAroundStr);
         exit(0);
     }
     else {
@@ -80,18 +110,11 @@ sub step($$)
     $Path[$r][$c] = push(@Steps, [ $r, $c ]);
     if ($r == $ER && $c == $EC) { return 1 }
 
-    if (step($r+1, $c+1) ||
-        step($r+1, $c  ) ||
-        step($r+1, $c-1) ||
-        step($r  , $c-1) ||
-        step($r  , $c+1) ||
-        step($r-1, $c+1) ||
-        step($r-1, $c  ) ||
-        step($r-1, $c-1)) { return 1 }
+    stepAround($r, $c) && return 1;
 
-     $Path[$r][$c] = 0;
-     pop(@Steps);
-     return undef;
+    $Path[$r][$c] = 0;
+    pop(@Steps);
+    return undef;
 }
 
 # Minimize a path by finding shortcuts
