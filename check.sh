@@ -3,9 +3,9 @@
 echo -n "$2 check "
 if [[ "$(diff -q $1 $2)" != "" ]]; then
   echo Fail
-  exit 1
+else
+  echo OK
 fi
 
-echo OK
 exit 0
 

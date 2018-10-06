@@ -9,7 +9,9 @@ CHKS	:= $(addprefix data/, $(addsuffix .chk, $(NAMES)))
 all:	progs outs checks
 progs:	$(addsuffix .chk, $(basename $(PROGS)))
 outs:	$(OUTS)
-checks:	$(CHKS)
+checks:	outs $(CHKS)
+updref:	outs
+	./update-refs.sh
 clean:;	rm -f data/*.out
 
 .PHONY:		check clean .chk
