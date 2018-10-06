@@ -6,7 +6,10 @@ MAPS	:= $(addprefix data/, $(addsuffix .map, $(NAMES)))
 OUTS	:= $(addprefix data/, $(addsuffix .out, $(NAMES)))
 CHKS	:= $(addprefix data/, $(addsuffix .chk, $(NAMES)))
 
-check:	$(addsuffix .chk, $(basename $(PROGS))) $(OUTS) $(CHKS)
+all:	progs outs checks
+progs:	$(addsuffix .chk, $(basename $(PROGS)))
+outs:	$(OUTS)
+checks:	$(CHKS)
 clean:;	rm -f data/*.out
 
 .PHONY:		check clean .chk

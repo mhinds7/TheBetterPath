@@ -24,6 +24,7 @@ my @Around = ([1, 1], [1, 0], [1,-1], [0,-1], [0,1], [-1,1], [-1,0], [-1,-1]);
 my (@Map, @Path, @Steps);
 my ($SR, $SC, $ER, $EC);
 my ($Nrows, $Ncols) = (0, undef);
+my $Nsteps = 0; # Total number of steps
 
 sub step($$);
 sub minPath();
@@ -58,10 +59,12 @@ sub dumpPath($);
     if (step($SR, $SC)) {
         my $depth = scalar(@Steps);
         dumpPath($depth);
-        if ((my $depth2 = minPath()) != $depth) {
+        my $depth2 = minPath();
+        if ($depth2 != $depth) {
             printf("Minimized %d steps\n", $depth - $depth2);
             dumpPath($depth2);
         }
+        printf("Walk %4d %3d %3d %3d", $Nsteps, $depth, $depth2, $depth2 - $depth);
         exit(0);
     }
     else {
@@ -69,12 +72,13 @@ sub dumpPath($);
         exit(1);
     }
 }
-  
+
 sub step($$)
 {
     my ($r, $c) = @_;
 #   These are the boundary test elimated by the guards
 #   if ($r >= $Nrows || $c >= $Ncols || $r < 0 || $c < 0) { return }
+    $Nsteps++;
     if ($Map[$r][$c] ne 'X') { return }
     $Map[$r][$c] = 'Y';
     $Path[$r][$c] = push(@Steps, [ $r, $c ]);
