@@ -28,8 +28,7 @@ my ($Nrows, $Ncols) = (0, undef);
 my $Nsteps = 0; # Total number of steps
 
 sub step($$);
-sub minDepths();
-sub dumpDepths($);
+sub dumpSteps($);
 
 # Pretend there is a main sub context
 #main
@@ -73,6 +72,13 @@ sub dumpDepths($);
     }
 }
 
+sub dumpMap
+{
+    my $buf = "\x1b\x5b\x33\x4a\x1b\x5b\x48\x1b\x5b\x32\x4a";
+    print(STDERR $buf.join('', map { join('', @$_)."\n" } @Map));
+    select(undef, undef,undef, 0.01);
+}
+
 sub step($$)
 {
     my ($r, $c) = @_;
@@ -80,7 +86,8 @@ sub step($$)
 #   if ($r >= $Nrows || $c >= $Ncols || $r < 0 || $c < 0) { return }
     $Nsteps++;
     if ($Map[$r][$c] ne 'X') { return }
-    $Map[$r][$c] = 'Y';
+#D  dumpMap();
+    $Map[$r][$c] = ' ';
     $Depths[$r][$c] = push(@Steps, [ $r, $c ]);
     if ($r == $ER && $c == $EC) {
         $Map[$r][$c] = 'Z';
@@ -101,6 +108,8 @@ sub step($$)
             goto unwind
     }
     else {
+        $Map[$r][$c] = '.';
+#D      dumpMap();
         pop(@Steps);
         return $Depths[$r][$c] = undef;
     }
@@ -114,7 +123,7 @@ unwind:
     for my $ar (@Around2) {
         ($r1, $c1) = ($r+$ar->[0], $c+$ar->[1]);
         my $mp = \$Map[$r1][$c1];
-        if ($$mp eq 'Y') {
+        if ($$mp eq ' ') {
             $$mp = 'Z';
             my $dp = \$Depths[$r1][$c1];
             if ($$dp && $$dp <= $m1) {
@@ -127,7 +136,7 @@ unwind:
     return $minrc->[0] == $SR && $minrc->[1] == $SC ? 1 : $minrc;
 }
 
-sub dumpSteps
+sub dumpSteps($)
 {
     my $steps = $_[0];
     my $depth = scalar(@$steps);
