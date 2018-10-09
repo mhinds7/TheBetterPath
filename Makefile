@@ -6,7 +6,7 @@ MAPS	:= $(addprefix data/, $(addsuffix .map, $(NAMES)))
 OUTS	:= $(addprefix data/, $(addsuffix .out, $(NAMES)))
 CHKS	:= $(addprefix data/, $(addsuffix .chk, $(NAMES)))
 
-all:	progs outs checks
+all:	clean progs outs checks
 progs:	$(addsuffix .chk, $(basename $(PROGS)))
 outs:	$(OUTS)
 checks:	outs $(CHKS)

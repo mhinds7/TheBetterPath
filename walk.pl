@@ -75,7 +75,7 @@ sub dumpSteps($);
 my $dmpCnt = 0;
 sub dumpMap
 {
-#   ++$dmpCnt % 20 == 0 || return;
+#D  ++$dmpCnt % 20 == 0 || return;
     my $buf = "\x1b\x5b\x48\x1b\x5b\x32\x4a";
     print(STDERR $buf.join('', map { join('', @$_)."\n" } @Map));
     select(undef, undef,undef, 0.002);
@@ -88,7 +88,7 @@ sub step($$)
 #   if ($r >= $Nrows || $c >= $Ncols || $r < 0 || $c < 0) { return }
     $Nsteps++;
     if ($Map[$r][$c] ne 'X') { return }
-#   dumpMap();
+#D  dumpMap();
     $Map[$r][$c] = ' ';
     $Depths[$r][$c] = push(@Steps, [ $r, $c ]);
     if ($r == $ER && $c == $EC) {
@@ -111,7 +111,7 @@ sub step($$)
     }
     else {
         $Map[$r][$c] = '.';
-#       dumpMap();
+#D      dumpMap();
         pop(@Steps);
         return $Depths[$r][$c] = undef;
     }
