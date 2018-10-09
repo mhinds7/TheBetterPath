@@ -56,20 +56,20 @@ sub dumpSteps($);
     push(@Map, [ split('', '*'x($Ncols+2)) ]);
 
     # Recursively walk the Map
-    if (step($SR, $SC)) {
-        my $depth = dumpSteps(\@Steps);
-        my $depth2 = scalar(@MinSteps);
-        if ($depth != $depth2) {
-            printf("Minimized 425 %d steps\n", $depth - $depth2);
-            dumpSteps(\@MinSteps);
-        }
-        printf("Walk %4d %3d %3d %3d\n", $Nsteps, $depth, $depth2, $depth2 - $depth);
-        exit(0);
+    step($SR, $SC);
+    my $depth = dumpSteps(\@Steps);
+    my $depth2 = scalar(@MinSteps);
+    if ($depth != $depth2) {
+        printf("Minimized 425 %d steps\n", $depth - $depth2);
+        dumpSteps(\@MinSteps);
     }
-    else {
-        printf("No Path Found %d\n", $Nsteps);
-        exit(0);
-    }
+    printf("%-4s %6d %5d %5d %6d\n"
+        ,$depth ? 'Path' : '***'
+        ,$Nsteps
+        ,$depth
+        ,$depth2
+        ,$depth2 - $depth);
+    exit(0);
 }
 
 my $dmpCnt = 0;
