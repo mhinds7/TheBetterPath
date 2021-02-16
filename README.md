@@ -1,6 +1,8 @@
 # TheBetterPath
 Find a better path through a simple tile map
 
+YoyoMa
+
 ## Use
 Simply type make
 
